@@ -10,6 +10,8 @@ Run the example from the doc:
 
 See the `custom completion`: first, type and complete a verb (eat, throw,…). Later words are completed as fruits (orange, banana,…). Type "o<TAB>" and see the completion to "orange" (no dropdown list).
 
+![](readline.png)
+
 Also type `C-o` to insert custom text.
 
 
