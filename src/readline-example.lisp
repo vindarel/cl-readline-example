@@ -65,10 +65,20 @@
 ;;; Finally, this is our main function. To exit from the loop, enter 'quit'.
 
 (defun run-example ()
-  (do ((i 0 (1+ i))
-       (text ""))
-      ((string= "quit" (string-trim " " text)))
-    (setf text
-          (rl:readline :prompt (format nil "cl-readline ~a> " i)
-                       :add-history t
-                       :novelty-check #'novelty-check))))
+  (handler-case
+      (do ((i 0 (1+ i))
+           (text ""))
+          ((string= "quit" (string-trim " " text)))
+        (setf text
+              (rl:readline :prompt (format nil "cl-readline ~a> " i)
+                           :add-history t
+                           :novelty-check #'novelty-check)))
+    (#+sbcl sb-sys:interactive-interrupt
+     #+ccl  ccl:interrupt-signal-condition
+     #+clisp system::simple-interrupt-condition
+     #+ecl ext:interactive-interrupt
+     #+allegro excl:interrupt-signal
+     () (progn
+          ;; (format *error-output* "Aborting.~&")
+          (uiop:quit)))
+    (error (c) (format t "Woops, an unknown error occured:~&~a~&" c))))
