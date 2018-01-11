@@ -3,15 +3,12 @@
 
 ;;; Load some systems and define a package...
 
-(asdf:load-system :alexandria)
-(asdf:load-system :cl-readline)
-
-(cl:defpackage :example
-  (:use    #:common-lisp
+(defpackage readline-example
+  (:use    #:cl
            #:alexandria)
   (:export #:run-example))
 
-(in-package :example)
+(in-package :readline-example)
 
 ;;; Now let's define lists of verbs and fruits:
 
@@ -72,6 +69,6 @@
        (text ""))
       ((string= "quit" (string-trim " " text)))
     (setf text
-          (rl:readline :prompt (format nil "[~a]> " i)
+          (rl:readline :prompt (format nil "cl-readline ~a> " i)
                        :add-history t
                        :novelty-check #'novelty-check))))
