@@ -43,7 +43,6 @@
         (select-completions *verbs*)
         (select-completions *fruits*))))
 
-(rl:register-function :complete #'custom-complete)
 
 ;;; Let's also create a custom command and bind it to some key sequence so
 ;;; user can invoke it. In this example user can automagically insert phrase
@@ -53,7 +52,6 @@
   (declare (ignore arg key))
   (rl:insert-text "inserted text"))
 
-(rl:bind-keyseq "\\C-o" #'print-some-text)
 
 ;;; Let's write novelty-check, so if the actual line is equal to the most
 ;;; recent history line it will not be added to the history.
@@ -65,6 +63,10 @@
 ;;; Finally, this is our main function. To exit from the loop, enter 'quit'.
 
 (defun run-example ()
+
+  (rl:register-function :complete #'custom-complete)
+  (rl:bind-keyseq "\\C-o" #'print-some-text)
+
   (handler-case
       (do ((i 0 (1+ i))
            (text ""))
