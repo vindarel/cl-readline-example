@@ -1,6 +1,6 @@
 ## Readline example in Common Lisp
 
-Example from cl-readline's documentation: https://mrkkrp.github.io/cl-readline/.
+Example from cl-readline's documentation: https://vindarel.github.io/cl-readline/
 
 Showcases custom completion and keybindings.
 
