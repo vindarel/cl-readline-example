@@ -1,11 +1,11 @@
 ;;; Official cl-readline example.
-;;; https://mrkkrp.github.io/cl-readline/
+;;;
+;;; This file is used with the asd declaration to build an executable.
 
 ;;; Load some systems and define a package...
 
 (defpackage readline-example
-  (:use    #:cl
-           #:alexandria)
+  (:use    #:cl)
   (:export #:run-example))
 
 (in-package :readline-example)
@@ -20,28 +20,24 @@
 ;;; be completed as fruits.
 
 (defun custom-complete (text start end)
+  "text is the partially entered word.
+   start and end are its position in `*line-buffer*'.
+   See cl-readline's documentation.
+   "
   (declare (ignore end))
-  (labels ((common-prefix (items)
-             (subseq
-              (car items) 0
-              (position
-               nil
-               (mapcar
-                (lambda (i)
-                  (every (lambda (x)
-                           (char= (char (car items) i)
-                                  (char x           i)))
-                         (cdr items)))
-                (iota (reduce #'min (mapcar #'length items)))))))
-           (select-completions (list)
-             (let ((els (remove-if-not (curry #'starts-with-subseq text)
+  (labels ((select-completions (list)
+             (let ((els (remove-if-not (lambda (it)
+                                         (str:starts-with? text it))
                                        list)))
                (if (cdr els)
-                   (cons (common-prefix els) els)
+                   (cons (str:prefix els) els)
                    els))))
     (if (zerop start)
         (select-completions *verbs*)
         (select-completions *fruits*))))
+
+#+test-readline-example
+(assert (= 3 (length (custom-complete "ban" 2 2))))
 
 
 ;;; Let's also create a custom command and bind it to some key sequence so

@@ -1,16 +1,14 @@
-;;; The example from the doc page, untouched.
-;;; https://mrkkrp.github.io/cl-readline/#Example
+;;; Example for cl-readline.
 ;;;
-;;; run with
+;;; This file is to be run with
 ;;; sbcl --script example.lisp
 ;;;
-;;; Works fine. jan, 2018, Debian, SBCL.
 
 (load #p"~/quicklisp/setup.lisp")
 
 ;;; Load some systems and define a package...
 
-(asdf:load-system :alexandria)
+(asdf:load-system :str)
 (asdf:load-system :cl-readline)
 
 (cl:defpackage :example
@@ -31,27 +29,19 @@
 
 (defun custom-complete (text start end)
   (declare (ignore end))
-  (labels ((common-prefix (items)
-             (subseq
-              (car items) 0
-              (position
-               nil
-               (mapcar
-                (lambda (i)
-                  (every (lambda (x)
-                           (char= (char (car items) i)
-                                  (char x           i)))
-                         (cdr items)))
-                (iota (reduce #'min (mapcar #'length items)))))))
-           (select-completions (list)
-             (let ((els (remove-if-not (curry #'starts-with-subseq text)
+  (labels ((select-completions (list)
+             (let ((els (remove-if-not (lambda (it)
+                                         (str:starts-with? text it))
                                        list)))
                (if (cdr els)
-                   (cons (common-prefix els) els)
+                   (cons (str:prefix els) els)
                    els))))
     (if (zerop start)
         (select-completions *verbs*)
         (select-completions *fruits*))))
+
+#+test-readline-example
+(assert (= 3 (length (custom-complete "ban" 2 2))))
 
 (rl:register-function :complete #'custom-complete)
 
@@ -73,15 +63,27 @@
             (string-trim " " y)))
 
 ;;; Finally, this is our main function. To exit from the loop, enter 'quit'.
-
 (defun run-example ()
-  (do ((i 0 (1+ i))
-       (text ""))
-      ((string= "quit" (string-trim " " text)))
-    (setf text
-          (rl:readline :prompt (format nil "[~a]> " i)
-                       :add-history t
-                       :novelty-check #'novelty-check))))
 
+  (rl:register-function :complete #'custom-complete)
+  (rl:bind-keyseq "\\C-o" #'print-some-text)
+
+  (handler-case
+      (do ((i 0 (1+ i))
+           (text ""))
+          ((string= "quit" (string-trim " " text)))
+        (setf text
+              (rl:readline :prompt (format nil "cl-readline ~a> " i)
+                           :add-history t
+                           :novelty-check #'novelty-check)))
+    (#+sbcl sb-sys:interactive-interrupt
+      #+ccl  ccl:interrupt-signal-condition
+      #+clisp system::simple-interrupt-condition
+      #+ecl ext:interactive-interrupt
+      #+allegro excl:interrupt-signal
+      () (progn
+           ;; (format *error-output* "Aborting.~&")
+           (uiop:quit)))
+    (error (c) (format t "Woops, an unknown error occured:~&~a~&" c))))
 ;; addition
 (run-example)

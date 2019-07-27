@@ -3,7 +3,7 @@
   :author ""
   :license ""
   :depends-on (:cl-readline
-               :alexandria)
+               :str)
   :components ((:module "src"
                 :components
                 ((:file "readline-example"))))
