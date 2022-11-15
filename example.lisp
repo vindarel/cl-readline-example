@@ -63,6 +63,10 @@
             (string-trim " " y)))
 
 ;;; Finally, this is our main function. To exit from the loop, enter 'quit'.
+
+(defun echo (text)
+  (format t "you said: ~a~&" text))
+
 (defun run-example ()
 
   (rl:register-function :complete #'custom-complete)
@@ -77,14 +81,15 @@
         (setf text
               (rl:readline :prompt (format nil "cl-readline ~a> " i)
                            :add-history t
-                           :novelty-check #'novelty-check)))
+                           :novelty-check #'novelty-check))
+        (echo text))
     (#+sbcl sb-sys:interactive-interrupt
       #+ccl  ccl:interrupt-signal-condition
       #+clisp system::simple-interrupt-condition
       #+ecl ext:interactive-interrupt
       #+allegro excl:interrupt-signal
       () (progn
-           ;; (format *error-output* "Aborting.~&")
+           (format t "~&Bye!~&")
            (uiop:quit)))
     (error (c) (format t "Woops, an unknown error occured:~&~a~&" c))))
 ;; addition
