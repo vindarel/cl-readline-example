@@ -71,7 +71,9 @@
   (handler-case
       (do ((i 0 (1+ i))
            (text ""))
-          ((string= "quit" (string-trim " " text)))
+          ((or (string= "quit" (string-trim " " text))
+               ;; C-d:
+               (string= "NIL" text)))
         (setf text
               (rl:readline :prompt (format nil "cl-readline ~a> " i)
                            :add-history t
