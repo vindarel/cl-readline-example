@@ -67,10 +67,18 @@
 (defun echo (text)
   (format t "you said: ~a~&" text))
 
-(defun run-example ()
+(defun insert-parens (count key)
+  "Insert two parenthesis and move the cursor in-between.
+  We bind this function to the ( key below."
+  ;; count and key are mandatory arguments, sent by readline commands (not functions).
+  (declare (ignore count key))
+  (rl:insert-text "()")
+  (rl:backward-char))
 
+(defun run-example ()
   (rl:register-function :complete #'custom-complete)
   (rl:bind-keyseq "\\C-o" #'print-some-text)
+  (rl:bind-keyseq "(" #'insert-parens)
 
   (handler-case
       (do ((i 0 (1+ i))

@@ -18,8 +18,9 @@ See the `custom completion`: first, type and complete a verb (`eat`, `throw`,…
 
 ![](readline.png)
 
-Also type `C-o` to insert a predefined custom text.
+Also type `C-o` to insert a predefined custom text,
 
+and type an opening paren "(" to insert two parens and move the cursor in-between (using `rl:insert-text` and `rl:backward-char`).
 
 
 Some command line apps using cl-readline:
@@ -39,6 +40,7 @@ Please add yours here and/or in [readline's wiki](https://github.com/vindarel/cl
 
 We added:
 
+* Nov, 2023: bind "(" to "( )" and move the cursor in-between.
 * Nov, 2022: handle a C-d (NIL input), output something to show using the text variable.
 * july, 2019: rewrote without curry, removed the dependency on Alexandria, added a dependency on cl-str.
 * asdf system declaration
